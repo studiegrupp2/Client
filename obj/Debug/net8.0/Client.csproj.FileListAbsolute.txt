@@ -13,3 +13,7 @@
 /Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/obj/Debug/net8.0/Client.pdb
 /Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/obj/Debug/net8.0/Client.genruntimeconfig.cache
 /Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/obj/Debug/net8.0/ref/Client.dll
+/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/bin/Debug/net8.0/Shared.dll
+/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/bin/Debug/net8.0/Shared.pdb
+/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/obj/Debug/net8.0/Client.csproj.AssemblyReference.cache
+/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/obj/Debug/net8.0/Client.csproj.CopyComplete
