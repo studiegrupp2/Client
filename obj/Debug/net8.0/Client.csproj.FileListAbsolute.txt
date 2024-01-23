@@ -1,0 +1,15 @@
+/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/bin/Debug/net8.0/Client
+/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/bin/Debug/net8.0/Client.deps.json
+/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/bin/Debug/net8.0/Client.runtimeconfig.json
+/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/bin/Debug/net8.0/Client.dll
+/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/bin/Debug/net8.0/Client.pdb
+/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/obj/Debug/net8.0/Client.GeneratedMSBuildEditorConfig.editorconfig
+/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/obj/Debug/net8.0/Client.AssemblyInfoInputs.cache
+/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/obj/Debug/net8.0/Client.AssemblyInfo.cs
+/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/obj/Debug/net8.0/Client.csproj.CoreCompileInputs.cache
+/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/obj/Debug/net8.0/Client.sourcelink.json
+/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/obj/Debug/net8.0/Client.dll
+/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/obj/Debug/net8.0/refint/Client.dll
+/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/obj/Debug/net8.0/Client.pdb
+/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/obj/Debug/net8.0/Client.genruntimeconfig.cache
+/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/obj/Debug/net8.0/ref/Client.dll

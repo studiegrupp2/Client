@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/isakgunnardo/Ecutbildning/backend1/Client/Client.csproj": {}
+    "/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/Client.csproj": {}
   },
   "projects": {
-    "/Users/isakgunnardo/Ecutbildning/backend1/Client/Client.csproj": {
+    "/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/Client.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/isakgunnardo/Ecutbildning/backend1/Client/Client.csproj",
+        "projectUniqueName": "/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/Client.csproj",
         "projectName": "Client",
-        "projectPath": "/Users/isakgunnardo/Ecutbildning/backend1/Client/Client.csproj",
+        "projectPath": "/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/Client.csproj",
         "packagesPath": "/Users/isakgunnardo/.nuget/packages/",
-        "outputPath": "/Users/isakgunnardo/Ecutbildning/backend1/Client/obj/",
+        "outputPath": "/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/isakgunnardo/.nuget/NuGet/NuGet.Config"

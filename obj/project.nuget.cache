@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "96VmIgXTKoIsEGy8+mjlCgqr7znyifMM4u0nux8x2zEV4SAroG44w7fqHYpTH25Pslhv24rMomSBdxikXJqD2A==",
+  "dgSpecHash": "kxvuLt7sbEUPiAwJuua2PmXjkdSqdH02yE07dHwM6Jzlyu0NSlzyaXqfl8ghtKhvas4Np7TvyVHfe8N1b3A5/Q==",
   "success": true,
-  "projectFilePath": "/Users/isakgunnardo/Ecutbildning/backend1/Client/Client.csproj",
+  "projectFilePath": "/Users/isakgunnardo/Ecutbildning/backend1/Gruppuppgift/Client/Client.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }
