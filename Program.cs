@@ -9,7 +9,8 @@ class Program
             new byte[] { 127, 0, 0, 1 },
             27800
         );
-
+        connection.Send(new Shared.RegisterUserMessage("Ironman", "stark123"));
+        connection.Send(new Shared.LoginMessage("Ironman", "stark123"));
 
     }
 }
