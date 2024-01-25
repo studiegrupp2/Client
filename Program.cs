@@ -11,14 +11,16 @@ class Program
             new byte[] { 127, 0, 0, 1 },
             27800
         );
-     
+        
+        // connection.Send(new SendMessageCommand("Bamse", "Hej hopp!"));
+
         string LoginNameInput = Console.ReadLine() ?? "";
         string LoginPasswordInput = Console.ReadLine() ?? "";
     
         connection.Send(new LoginCommand(LoginNameInput, LoginPasswordInput));
         
         
-        // connection.Send(new SendMessageCommand(Console.ReadLine()));
+        
 
         
 
@@ -27,9 +29,23 @@ class Program
    
    while (true)
         {
+            List<Command> receivedCommands = connection.Receive();
+
+            foreach (Command receivedCommand in receivedCommands)
+            {
+                if (receivedCommand is SendMessageCommand)
+                {
+                    SendMessageCommand message = (SendMessageCommand)receivedCommand;
+                    Console.WriteLine($"{message.Sender} Sent: {message.Content}");
+                }
+                
+            }
 
             Console.WriteLine("Write a message: ");
-            connection.Send(new SendMessageCommand(Console.ReadLine()!));
+
+
+//Todo set Sender till connected User och Content
+            connection.Send(new SendMessageCommand(Console.ReadLine()!, ""));
 
             // if (state == "entry") {
             //     // TODO: Ge meny
@@ -49,16 +65,7 @@ class Program
             // string content = System.Text.Encoding.UTF8.GetString(buffer, 0, read);
             // Console.WriteLine("Echo: " + content);
 
-            List<Command> receivedCommands = connection.Receive();
-
-            foreach (Command receivedCommand in receivedCommands)
-            {
-                if (receivedCommand is SendMessageCommand)
-                {
-                    SendMessageCommand globalMsg = (SendMessageCommand)receivedCommand;
-                    Console.WriteLine($"{globalMsg.Content}");
-                }
-            }
+            
           
         }
         // Console.WriteLine("Type anything to close");
