@@ -108,9 +108,10 @@ class Program
                         
                         else if (input == "2")
                         {
-                            Console.WriteLine("Enter username to receiver:");
-
+                            Console.WriteLine("Enter username for receiver:");
+                            string receiver = Console.ReadLine() ?? ""; 
                             Console.WriteLine("Enter messege:");
+                            connection.Send(new SendPrivateMessageCommand(loggedInUser, receiver, Console.ReadLine()!));
                         }
                         else if(input == "3")
                         {
