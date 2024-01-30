@@ -29,13 +29,11 @@ class Program
         Console.WriteLine("Login : press '1'");
         Console.WriteLine("Register : press '2'");
         Console.WriteLine("Exit : type 'exit'");
-
+        
+        string state = "entry";
+        string loggedInUser = "";
         while (true)
         {
-
-            receivedCommands = connection.Receive();
-
-            string state = "entry";
             if (state == "entry")
             {
                 string? input = Console.ReadLine();
@@ -48,10 +46,18 @@ class Program
                 switch (input)
                 {
                     case "1":
-                        loginView.Execute();
+                        loggedInUser = loginView.Execute();
                         Console.WriteLine("Press any key to continue..."); //Async
                         Console.ReadKey();
                         state = loginView.ListenForAuth(receivedCommands, connection, state);
+                        
+                        if (state == "loggedin") {
+                            Console.WriteLine("logged in state");
+                        // loopa alla meddelanden
+                            Console.WriteLine("To send message to all: type 1");
+                            Console.WriteLine("To send private message: type 2");
+                            Console.WriteLine("To logout: type 3");
+                        }
                         break;
 
                     case "2":
@@ -72,18 +78,54 @@ class Program
             {
                 case "loggedin":
                     {
-                        Console.WriteLine("logged in state");
-                        // loopa alla meddelanden
+                        //while()
+
+                        receivedCommands = connection.Receive();
                         foreach (Command receivedCommand in receivedCommands)
                         {
+
                             if (receivedCommand is SendMessageCommand)
                             {
-                                Console.WriteLine("---");
                                 SendMessageCommand message = (SendMessageCommand)receivedCommand;
                                 Console.WriteLine($"{message.Sender} Sent: {message.Content}");
                             }
                         }
-                    //connection.Send(new SendMessageCommand(Console.ReadLine(),""));
+            
+                        if (!Console.KeyAvailable) break;
+
+                        string? input = Console.ReadLine();
+                        if (input == null)
+                        {
+                            Console.WriteLine("no input received");
+                            return;
+                        }
+                       
+                        if (input == "1")
+                        {
+                            Console.WriteLine("enter your message:");
+                            connection.Send(new SendMessageCommand(loggedInUser, Console.ReadLine()!));
+                        }
+                        
+                        else if (input == "2")
+                        {
+                            Console.WriteLine("Enter username to receiver:");
+
+                            Console.WriteLine("Enter messege:");
+                        }
+                        else if(input == "3")
+                        {
+                            //logout
+                            state = "entry";
+                        }
+                        else
+                        {
+                            Console.WriteLine("Not valid input");   
+                        }
+                        
+                        //while-loop
+                        
+                    // connection.Send(new SendMessageCommand("", Console.ReadLine()!));
+                    // connection.Send(new SendPrivateMessageCommand("",Console.ReadLine()!, Console.ReadLine()!));
                         
                     }
                     break;
@@ -97,14 +139,10 @@ class Program
                     break;
             }
 
-
             // if (state == "loggedin")
             // {
             //     Console.WriteLine("logged in state");
             // }
-
-
-
 
             //Todo set Sender till connected User och Content
             // connection.Send(new SendMessageCommand(LoginNameInput, Console.ReadLine()!));
@@ -124,7 +162,6 @@ class Program
         // Console.WriteLine("Type anything to close");
         // Console.ReadLine();
     }
-
 }
 
 public class ConsoleInput
@@ -156,25 +193,26 @@ public abstract class View
         this.Connection = connection;
     }
 
-    public abstract void Execute();
+    public abstract string Execute();
 }
 
 public class LoginView : View
 {
     public LoginView(IConnection connection, ConsoleInput consoleInput)
        : base(connection, consoleInput) { }
-    public override void Execute()
+    public override string Execute()
     {
         Console.WriteLine("Type your username");
         string? UsernameInput = ConsoleInput.GetInput() ?? "";
-
+        
         Console.WriteLine("Type your password");
         string? passwordInput = ConsoleInput.GetInput() ?? "";
 
         Connection.Send(new LoginCommand(UsernameInput, passwordInput));
+
+        return UsernameInput;
     }
 
-     
     public string ListenForAuth(List<Command> receivedCommands, IConnection connection, string state)
     {
         state = "entry";
@@ -197,7 +235,7 @@ public class RegisterView : View
 {
     public RegisterView(IConnection connection, ConsoleInput consoleInput)
        : base(connection, consoleInput) { }
-    public override void Execute()
+    public override string Execute()
     {
         Console.WriteLine("Type your new username");
         string UsernameInput = ConsoleInput.GetInput() ?? "";
@@ -206,5 +244,7 @@ public class RegisterView : View
         string passwordInput = ConsoleInput.GetInput() ?? "";
 
         Connection.Send(new RegisterUserCommand(UsernameInput, passwordInput));
+
+        return UsernameInput;
     }
 }
