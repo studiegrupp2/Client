@@ -6,7 +6,6 @@ class Program
 {
     static void Main(string[] args)
     {
-        Console.WriteLine("Hello, grupp2!");
         Shared.IConnection connection = Shared.SocketConnection.Connect(
             new byte[] { 127, 0, 0, 1 },
             27800
@@ -25,17 +24,23 @@ class Program
         //connection.Send(new LoginCommand(LoginNameInput, LoginPasswordInput));
         // connection.Send(new SendMessageCommand("Bamse", "Hallåj"));
 
-        Console.WriteLine("Welcome. What do you want to do?");
-        Console.WriteLine("Login : press '1'");
-        Console.WriteLine("Register : press '2'");
-        Console.WriteLine("Exit : type 'exit'");
-        
+        // Console.WriteLine("Welcome. What do you want to do?");
+        // Console.WriteLine("Login : press '1'");
+        // Console.WriteLine("Register : press '2'");
+        // Console.WriteLine("Exit : type 'exit'");
+
         string state = "entry";
         string loggedInUser = "";
+        // bool userLoggedIn = true; // för att kunna avsluta loopen
+
         while (true)
         {
             if (state == "entry")
             {
+                Console.WriteLine("Welcome. What do you want to do?");
+                Console.WriteLine("Login : press '1'");
+                Console.WriteLine("Register : press '2'");
+                Console.WriteLine("Exit : type '4'");
                 string? input = Console.ReadLine();
                 if (input == null)
                 {
@@ -50,13 +55,15 @@ class Program
                         Console.WriteLine("Press any key to continue..."); //Async
                         Console.ReadKey();
                         state = loginView.ListenForAuth(receivedCommands, connection, state);
-                        
-                        if (state == "loggedin") {
+
+                        if (state == "loggedin")
+                        {
                             Console.WriteLine("logged in state");
-                        // loopa alla meddelanden
+                            // loopa alla meddelanden
                             Console.WriteLine("To send message to all: type 1");
                             Console.WriteLine("To send private message: type 2");
                             Console.WriteLine("To logout: type 3");
+                            Console.WriteLine("To exit chattapplication: type 4");
                         }
                         break;
 
@@ -65,12 +72,18 @@ class Program
                         state = "entry";
                         break;
 
-                    case "exit":
+                    case "3":
+                        Console.WriteLine("Successfully logged out");
                         state = "entry";
                         break;
+
+                    case "4":
+                        connection.Send(new DisconnectCommand());
+                        System.Environment.Exit(0);
+                        break;
+
                 }
-                // TODO: Ge meny
-                // login -> state = "loggedin"
+
             }
 
 
@@ -79,6 +92,7 @@ class Program
                 case "loggedin":
                     {
                         //while()
+                        // if (!Console.KeyAvailable) break;
 
                         receivedCommands = connection.Receive();
                         foreach (Command receivedCommand in receivedCommands)
@@ -90,7 +104,7 @@ class Program
                                 Console.WriteLine($"{message.Sender} Sent: {message.Content}");
                             }
                         }
-            
+
                         if (!Console.KeyAvailable) break;
 
                         string? input = Console.ReadLine();
@@ -99,66 +113,44 @@ class Program
                             Console.WriteLine("no input received");
                             return;
                         }
-                       
+
                         if (input == "1")
                         {
                             Console.WriteLine("enter your message:");
                             connection.Send(new SendMessageCommand(loggedInUser, Console.ReadLine()!));
                         }
-                        
+
                         else if (input == "2")
                         {
                             Console.WriteLine("Enter username for receiver:");
-                            string receiver = Console.ReadLine() ?? ""; 
+                            string receiver = Console.ReadLine() ?? "";
                             Console.WriteLine("Enter messege:");
                             connection.Send(new SendPrivateMessageCommand(loggedInUser, receiver, Console.ReadLine()!));
                         }
-                        else if(input == "3")
+                        else if (input == "3")
                         {
-                            //logout
+                            connection.Send(new LogoutCommand(loggedInUser));
                             state = "entry";
+                            // userLoggedIn = false;
                         }
-                        else
+                        else if (input == "4")
                         {
-                            Console.WriteLine("Not valid input");   
+                            //exit connection application 
                         }
-                        
+
                         //while-loop
-                        
-                    // connection.Send(new SendMessageCommand("", Console.ReadLine()!));
-                    // connection.Send(new SendPrivateMessageCommand("",Console.ReadLine()!, Console.ReadLine()!));
-                        
+
+                        // connection.Send(new SendMessageCommand("", Console.ReadLine()!));
+                        // connection.Send(new SendPrivateMessageCommand("",Console.ReadLine()!, Console.ReadLine()!));
+
                     }
                     break;
 
-                case "register":
-                    //do something
-                    break;
 
                 case "entry":
                     //do something
                     break;
             }
-
-            // if (state == "loggedin")
-            // {
-            //     Console.WriteLine("logged in state");
-            // }
-
-            //Todo set Sender till connected User och Content
-            // connection.Send(new SendMessageCommand(LoginNameInput, Console.ReadLine()!));
-
-            // connection.Receive();
-            // string input = Console.ReadLine() ?? "";
-            //byte[] buffer = System.Text.Encoding.UTF8.GetBytes(input);
-
-            // connection.Send(buffer);
-
-            // buffer = new byte[10000];
-            // int read = socket.Receive(buffer);
-
-            // string content = System.Text.Encoding.UTF8.GetString(buffer, 0, read);
-            // Console.WriteLine("Echo: " + content);
         }
         // Console.WriteLine("Type anything to close");
         // Console.ReadLine();
@@ -205,7 +197,7 @@ public class LoginView : View
     {
         Console.WriteLine("Type your username");
         string? UsernameInput = ConsoleInput.GetInput() ?? "";
-        
+
         Console.WriteLine("Type your password");
         string? passwordInput = ConsoleInput.GetInput() ?? "";
 
@@ -229,7 +221,7 @@ public class LoginView : View
         }
         return state;
     }
-    
+
 }
 
 public class RegisterView : View
