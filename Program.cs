@@ -15,20 +15,7 @@ class Program
         ConsoleInput consoleInput = new ConsoleInput();
         LoginView loginView = new LoginView(connection, consoleInput);
         RegisterView registerView = new RegisterView(connection, consoleInput);
-        //View registerView = new RegisterView(connection, consoleInput);
-
-
-        // connection.Send(new SendMessageCommand("Bamse", "Hej hopp!"));
-        // string? LoginNameInput = consoleInput.GetInput() ?? ""; //Console.ReadLine() ?? "";
-        // string LoginPasswordInput = consoleInput.GetInput() ?? "";
-
-        //connection.Send(new LoginCommand(LoginNameInput, LoginPasswordInput));
-        // connection.Send(new SendMessageCommand("Bamse", "Hallåj"));
-
-        // Console.WriteLine("Welcome. What do you want to do?");
-        // Console.WriteLine("Login : press '1'");
-        // Console.WriteLine("Register : press '2'");
-        // Console.WriteLine("Exit : type 'exit'");
+        
 
         string state = "entry";
         string loggedInUser = "";
@@ -55,16 +42,20 @@ class Program
                         loggedInUser = loginView.Execute();
                         Console.WriteLine("Press any key to continue..."); //Async
                         Console.ReadKey();
+                        Console.WriteLine();
                         state = loginView.ListenForAuth(receivedCommands, connection, state);
 
                         if (state == "loggedin")
                         {
-                            Console.WriteLine("logged in state");
+
                             // loopa alla meddelanden
+                            Console.WriteLine();
                             Console.WriteLine("To send message to all: type 1");
                             Console.WriteLine("To send private message: type 2");
                             Console.WriteLine("To logout: type 3");
-                            // Console.WriteLine("To exit chattapplication: type 4");
+                            Console.WriteLine("To se commands: type 'help'");
+                            Console.WriteLine();
+
                         }
                         break;
 
@@ -84,6 +75,15 @@ class Program
                         connection.Send(new DisconnectCommand());
                         System.Environment.Exit(0);
                         break;
+                    
+                    case "help":
+                        Console.WriteLine();
+                        Console.WriteLine("To send message to all: type 1");
+                        Console.WriteLine("To send private message: type 2");
+                        Console.WriteLine("To logout: type 3");
+                        Console.WriteLine("To see commands: type 'help'");
+                        Console.WriteLine();
+                        break;
                 }
             }
 
@@ -91,64 +91,68 @@ class Program
             {
                 case "loggedin":
                     {
+                        //Listen for new messages
                         receivedCommands = connection.Receive();
                         foreach (Command receivedCommand in receivedCommands)
                         {
-
+                            if (receivedCommand is SendPrivateMessageCommand)
+                            {
+                                SendPrivateMessageCommand message = (SendPrivateMessageCommand)receivedCommand;
+                                Console.WriteLine($"Private message from {message.Sender}: {message.Content}");
+                            }
                             if (receivedCommand is SendMessageCommand)
                             {
                                 SendMessageCommand message = (SendMessageCommand)receivedCommand;
-                                Console.WriteLine($"{message.Sender} Sent: {message.Content}");
+                                Console.WriteLine($"{message.Sender} sent: {message.Content}");
                             }
                         }
 
                         if (!Console.KeyAvailable) break;
 
                         string? input = Console.ReadLine();
-                        if (input == null)
+                        switch (input)
                         {
-                            Console.WriteLine("no input received");
-                            return;
+                            case null:
+                                Console.WriteLine("");
+                                Console.WriteLine("No input received");
+                                Console.WriteLine("To see commands: type 'help'");
+                                break;
+                            
+                            case "1":
+                                Console.WriteLine("Enter your message:");
+                                connection.Send(new SendMessageCommand(loggedInUser, Console.ReadLine()!));
+                                break;
+                            
+                            case "2":
+                                Console.WriteLine("Enter username for receiver:");
+                                string receiver = Console.ReadLine() ?? "";
+                                Console.WriteLine("Enter message:");
+                                connection.Send(new SendPrivateMessageCommand(loggedInUser, receiver, Console.ReadLine()!));
+                                break;
+
+                            case "3":
+                                connection.Send(new LogoutCommand(loggedInUser));
+                                state = "entry";
+                                break;
+
+                            case "help":
+                                Console.WriteLine();
+                                Console.WriteLine("To send message to all: type 1");
+                                Console.WriteLine("To send private message: type 2");
+                                Console.WriteLine("To logout: type 3");
+                                Console.WriteLine("To see commands: type 'help'");
+                                Console.WriteLine();
+                                break;
+
+                            default: //If the user does not type any of the above cases
+                                Console.WriteLine("Not valid input");
+                                Console.WriteLine("To see commands: type 'help'");
+                                break;
                         }
-
-                        if (input == "1")
-                        {
-                            Console.WriteLine("enter your message:");
-                            connection.Send(new SendMessageCommand(loggedInUser, Console.ReadLine()!));
-                        }
-
-                        else if (input == "2")
-                        {
-                            Console.WriteLine("Enter username for receiver:");
-                            string receiver = Console.ReadLine() ?? "";
-                            Console.WriteLine("Enter messege:");
-                            connection.Send(new SendPrivateMessageCommand(loggedInUser, receiver, Console.ReadLine()!));
-                        }
-                        else if (input == "3")
-                        {
-                            connection.Send(new LogoutCommand(loggedInUser));
-                            state = "entry";
-
-                        }
-                        else
-                        {
-                            Console.WriteLine("Not valid input");
-                        }
-
-                        //while-loop
-
-                        // connection.Send(new SendMessageCommand("", Console.ReadLine()!));
-                        // connection.Send(new SendPrivateMessageCommand("",Console.ReadLine()!, Console.ReadLine()!));
-
                     }
                     break;
-                // case "entry":
-                //     //do something
-                //     break;
             }
         }
-        // Console.WriteLine("Type anything to close");
-        // Console.ReadLine();
     }
 }
 
@@ -210,20 +214,28 @@ public class LoginView : View
             if (receivedCommand is SendMessageCommand)
             {
                 SendMessageCommand message = (SendMessageCommand)receivedCommand;
+
                 if (message.Content != "Login failed. Wrong username or password.")
                 {
                     Console.WriteLine($"{message.Sender} Sent: {message.Content}");
                     state = "loggedin";
-                } 
-                else 
+                }
+                else
                 {
                     Console.WriteLine("Failed to login. Wrong username or password.");
+                }
+            }
+            else if (receivedCommand is SendPrivateMessageCommand)
+            {
+                SendPrivateMessageCommand PrivateMessage = (SendPrivateMessageCommand)receivedCommand;
+                if (PrivateMessage != null)
+                {
+                    Console.WriteLine($"Private message from {PrivateMessage.Sender}: {PrivateMessage.Content}");
                 }
             }
         }
         return state;
     }
-
 }
 
 public class RegisterView : LoginView
@@ -253,14 +265,6 @@ public class RegisterView : LoginView
             {
                 SendMessageCommand message = (SendMessageCommand)receivedCommand;
                 Console.WriteLine($"{message.Sender} Sent: {message.Content}");
-                // if (message.Content != "Username taken or empty username or password.")
-                // {
-                //     Console.WriteLine($"{message.Sender} Sent: {message.Content}");
-                // } 
-                // else if (message.Content == "Username taken or empty username or password.")
-                // {
-                //     Console.WriteLine($"{message.Sender} Sent: {message.Content}");
-                // }
             }
         }
         return state;
