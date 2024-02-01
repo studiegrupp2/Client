@@ -14,7 +14,8 @@ class Program
         //Class-Instances
         ConsoleInput consoleInput = new ConsoleInput();
         LoginView loginView = new LoginView(connection, consoleInput);
-        View registerView = new RegisterView(connection, consoleInput);
+        RegisterView registerView = new RegisterView(connection, consoleInput);
+        //View registerView = new RegisterView(connection, consoleInput);
 
 
         // connection.Send(new SendMessageCommand("Bamse", "Hej hopp!"));
@@ -31,7 +32,7 @@ class Program
 
         string state = "entry";
         string loggedInUser = "";
-        // bool userLoggedIn = true; // för att kunna avsluta loopen
+
 
         while (true)
         {
@@ -63,13 +64,15 @@ class Program
                             Console.WriteLine("To send message to all: type 1");
                             Console.WriteLine("To send private message: type 2");
                             Console.WriteLine("To logout: type 3");
-                            Console.WriteLine("To exit chattapplication: type 4");
+                            // Console.WriteLine("To exit chattapplication: type 4");
                         }
                         break;
 
                     case "2":
                         registerView.Execute();
-                        state = "entry";
+                        Console.WriteLine("Press any key to continue..."); //Async
+                        Console.ReadKey();
+                        state = registerView.ListenForAuth(receivedCommands, connection, state);
                         break;
 
                     case "3":
@@ -81,19 +84,13 @@ class Program
                         connection.Send(new DisconnectCommand());
                         System.Environment.Exit(0);
                         break;
-
                 }
-
             }
-
 
             switch (state)
             {
                 case "loggedin":
                     {
-                        //while()
-                        // if (!Console.KeyAvailable) break;
-
                         receivedCommands = connection.Receive();
                         foreach (Command receivedCommand in receivedCommands)
                         {
@@ -131,11 +128,11 @@ class Program
                         {
                             connection.Send(new LogoutCommand(loggedInUser));
                             state = "entry";
-                            // userLoggedIn = false;
+
                         }
-                        else if (input == "4")
+                        else
                         {
-                            //exit connection application 
+                            Console.WriteLine("Not valid input");
                         }
 
                         //while-loop
@@ -145,11 +142,9 @@ class Program
 
                     }
                     break;
-
-
-                case "entry":
-                    //do something
-                    break;
+                // case "entry":
+                //     //do something
+                //     break;
             }
         }
         // Console.WriteLine("Type anything to close");
@@ -206,7 +201,7 @@ public class LoginView : View
         return UsernameInput;
     }
 
-    public string ListenForAuth(List<Command> receivedCommands, IConnection connection, string state)
+    public virtual string ListenForAuth(List<Command> receivedCommands, IConnection connection, string state)
     {
         state = "entry";
         receivedCommands = connection.Receive();
@@ -215,8 +210,15 @@ public class LoginView : View
             if (receivedCommand is SendMessageCommand)
             {
                 SendMessageCommand message = (SendMessageCommand)receivedCommand;
-                Console.WriteLine($"{message.Sender} Sent: {message.Content}");
-                state = "loggedin";
+                if (message.Content != "Login failed. Wrong username or password.")
+                {
+                    Console.WriteLine($"{message.Sender} Sent: {message.Content}");
+                    state = "loggedin";
+                } 
+                else 
+                {
+                    Console.WriteLine("Failed to login. Wrong username or password.");
+                }
             }
         }
         return state;
@@ -224,7 +226,7 @@ public class LoginView : View
 
 }
 
-public class RegisterView : View
+public class RegisterView : LoginView
 {
     public RegisterView(IConnection connection, ConsoleInput consoleInput)
        : base(connection, consoleInput) { }
@@ -239,5 +241,28 @@ public class RegisterView : View
         Connection.Send(new RegisterUserCommand(UsernameInput, passwordInput));
 
         return UsernameInput;
+    }
+
+    public override string ListenForAuth(List<Command> receivedCommands, IConnection connection, string state)
+    {
+        state = "entry";
+        receivedCommands = connection.Receive();
+        foreach (Command receivedCommand in receivedCommands)
+        {
+            if (receivedCommand is SendMessageCommand)
+            {
+                SendMessageCommand message = (SendMessageCommand)receivedCommand;
+                Console.WriteLine($"{message.Sender} Sent: {message.Content}");
+                // if (message.Content != "Username taken or empty username or password.")
+                // {
+                //     Console.WriteLine($"{message.Sender} Sent: {message.Content}");
+                // } 
+                // else if (message.Content == "Username taken or empty username or password.")
+                // {
+                //     Console.WriteLine($"{message.Sender} Sent: {message.Content}");
+                // }
+            }
+        }
+        return state;
     }
 }
