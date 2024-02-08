@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 namespace Client;
 using Shared;
+
 class Program
 {
     static void Main(string[] args)
@@ -15,53 +16,40 @@ class Program
         ConsoleInput consoleInput = new ConsoleInput();
         LoginView loginView = new LoginView(connection, consoleInput);
         RegisterView registerView = new RegisterView(connection, consoleInput);
-        
+        HelpInformation helpInformation = new HelpInformation();
 
         string state = "entry";
         string loggedInUser = "";
-
 
         while (true)
         {
             if (state == "entry")
             {
-                Console.WriteLine("Welcome. What do you want to do?");
-                Console.WriteLine("Login : press '1'");
-                Console.WriteLine("Register : press '2'");
-                Console.WriteLine("Exit : type '4'");
+                helpInformation.PrintWelcomeInfo();
                 string? input = Console.ReadLine();
                 if (input == null)
                 {
                     Console.WriteLine("Not valid input, try again");
                     return;
                 }
-
                 switch (input)
                 {
                     case "1":
                         loggedInUser = loginView.Execute();
-                        Console.WriteLine("Press any key to continue..."); //Async
+                        Console.WriteLine("Press any key to continue...");
                         Console.ReadKey();
                         Console.WriteLine();
                         state = loginView.ListenForAuth(receivedCommands, connection, state);
 
                         if (state == "loggedin")
                         {
-
-                            // loopa alla meddelanden
-                            Console.WriteLine();
-                            Console.WriteLine("To send message to all: type 1");
-                            Console.WriteLine("To send private message: type 2");
-                            Console.WriteLine("To logout: type 3");
-                            Console.WriteLine("To se commands: type 'help'");
-                            Console.WriteLine();
-
+                            helpInformation.PrintHelp();
                         }
                         break;
 
                     case "2":
                         registerView.Execute();
-                        Console.WriteLine("Press any key to continue..."); //Async
+                        Console.WriteLine("Press any key to continue...");
                         Console.ReadKey();
                         state = registerView.ListenForAuth(receivedCommands, connection, state);
                         break;
@@ -75,14 +63,9 @@ class Program
                         connection.Send(new DisconnectCommand());
                         System.Environment.Exit(0);
                         break;
-                    
+
                     case "help":
-                        Console.WriteLine();
-                        Console.WriteLine("To send message to all: type 1");
-                        Console.WriteLine("To send private message: type 2");
-                        Console.WriteLine("To logout: type 3");
-                        Console.WriteLine("To see commands: type 'help'");
-                        Console.WriteLine();
+                        helpInformation.PrintHelp();
                         break;
                 }
             }
@@ -91,7 +74,6 @@ class Program
             {
                 case "loggedin":
                     {
-                        //Listen for new messages
                         receivedCommands = connection.Receive();
                         foreach (Command receivedCommand in receivedCommands)
                         {
@@ -117,12 +99,12 @@ class Program
                                 Console.WriteLine("No input received");
                                 Console.WriteLine("To see commands: type 'help'");
                                 break;
-                            
+
                             case "1":
                                 Console.WriteLine("Enter your message:");
                                 connection.Send(new SendMessageCommand(loggedInUser, Console.ReadLine()!));
                                 break;
-                            
+
                             case "2":
                                 Console.WriteLine("Enter username for receiver:");
                                 string receiver = Console.ReadLine() ?? "";
@@ -136,12 +118,7 @@ class Program
                                 break;
 
                             case "help":
-                                Console.WriteLine();
-                                Console.WriteLine("To send message to all: type 1");
-                                Console.WriteLine("To send private message: type 2");
-                                Console.WriteLine("To logout: type 3");
-                                Console.WriteLine("To see commands: type 'help'");
-                                Console.WriteLine();
+                                helpInformation.PrintHelp();
                                 break;
 
                             default: //If the user does not type any of the above cases
@@ -172,6 +149,26 @@ public class ConsoleInput
         {
             return input;
         }
+    }
+}
+
+public class HelpInformation
+{
+    public void PrintHelp()
+    {
+        Console.WriteLine();
+        Console.WriteLine("To send message to all: type 1");
+        Console.WriteLine("To send private message: type 2");
+        Console.WriteLine("To logout: type 3");
+        Console.WriteLine("To see commands: type 'help'");
+        Console.WriteLine();
+    }
+    public void PrintWelcomeInfo()
+    {
+        Console.WriteLine("Welcome. What do you want to do?");
+        Console.WriteLine("Login : press '1'");
+        Console.WriteLine("Register : press '2'");
+        Console.WriteLine("Exit : type '4'");
     }
 }
 
